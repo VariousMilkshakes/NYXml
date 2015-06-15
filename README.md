@@ -2,7 +2,7 @@
 Lite markup for styx forum posts
 
 ### Syntax
-`prefix` `rule` &nbsp; `option` = `value` &nbsp; `options...` > `content`
+`prefix` `editor` &nbsp; `option` = `value` &nbsp; `options...` > `content`
 
 ### Prefixes
 `_` : Underline
