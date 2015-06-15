@@ -11,6 +11,8 @@ Lite markup for styx forum posts
 
 `/` : Italics
 
+`-` : Strike through
+
 ### Rules and Options
 `pg` : text paragraph
 - `txs` Font size : **px**
