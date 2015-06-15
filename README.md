@@ -19,19 +19,19 @@ Lite markup for styx forum posts
 - `col` Color of font : **hex**
 - `bgc` Background color : **hex**
 
-`hl` : Large header
+`h1` : Large header
 - `txs` Font size : **px**
 - `col` Color of font : **hex**
 - `bgc` Background color : **hex**
 - `aln` Alignment : **left** / **right** / **mid**
 
-`hm` : Medium header
+`h2` : Medium header
 - `txs` Font size : **px**
 - `col` Color of font : **hex**
 - `bgc` Background color : **hex**
 - `aln` Alignment : **left** / **right** / **mid**
 
-`hs` : Small header
+`h3` : Small header
 - `txs` Font size : **px**
 - `col` Color of font : **hex**
 - `bgc` Background color : **hex**
