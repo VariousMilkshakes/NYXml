@@ -1,0 +1,30 @@
+{
+    "txs" : {
+        "css"  : "font-size",
+        "unit" : "px"
+    },
+    "col" : {
+        "css" : "color",
+        "unit" : ""
+    },
+    "bgc" : {
+        "css" : "background-color",
+        "unit" : ""
+    },
+    "aln" : {
+        "css" : "text-align",
+        "unit" : ""
+    },
+    "hgt" : {
+        "css" : "height",
+        "unit" : "px"
+    },
+    "wdt" : {
+        "css" : "width",
+        "unit" : "px"
+    },
+    "typ" : {
+        "css" : "list-style-type",
+        "unit" : ""
+    }
+}

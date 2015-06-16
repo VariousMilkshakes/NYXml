@@ -1,6 +1,63 @@
 {
     "set" : {
-        "defaultSize"   : 14,
-        "headerSize"    : 22
+        "txs"   : 14,
+        "col"   : "#000",
+        "bgc"   : "transparent",
+        "aln"   : "left",
+        "typ"   : "point"
+    },
+    "pg" : {
+        "tag"   : "p",
+        "content" : "",
+        "txs" : 14,
+        "col" : "#000",
+        "bgc" : "transparent",
+        "special" : "continous"
+    },
+    "h1" : {
+        "tag"   : "h1",
+        "content" : "",
+        "txs" : 30,
+        "col" : "#000",
+        "bgc" : "transparent",
+        "aln" : "left"
+    },
+    "h2" : {
+        "tag"   : "h2",
+        "content" : "",
+        "txs" : 24,
+        "col" : "#000",
+        "bgc" : "transparent",
+        "aln" : "left"
+    },
+    "h3" : {
+        "tag"   : "h3",
+        "content" : "",
+        "txs" : 20,
+        "col" : "#000",
+        "bgc" : "transparent",
+        "aln" : "left"
+    },
+    "ig" : {
+        "tag" : "image",
+        "content" : "",
+        "src" : "",
+        "hgt" : 50,
+        "wdt" : 50,
+        "special" : "alt-text"
+    },
+    "hr" : {
+        "tag" : "hr",
+        "hgt" : 0,
+        "wdt" : 90,
+        "special" : "percentageUnit"
+    },
+    "fl" : {
+        "tag" : "ul",
+        "typ" : "num",
+        "special" : "start-list"
+    },
+    "le" : {
+        "tag" : "li"
     }
 }

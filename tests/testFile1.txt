@@ -1,3 +1,3 @@
-set>ds~18 hs~26
+set ds~18>*
 hed1>Han
-imag>src~http://i.imgur.com/BDwdGva.jpg
+imag src~http://i.imgur.com/BDwdGva.jpg>Nice picture
