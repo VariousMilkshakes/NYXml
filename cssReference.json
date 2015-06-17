@@ -26,5 +26,9 @@
     "typ" : {
         "css" : "list-style-type",
         "unit" : ""
+    },
+    "alt" : {
+        "css" : "alt-text",
+        "unit" : ""
     }
 }

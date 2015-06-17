@@ -15,8 +15,6 @@ exports.scan = function(){
             //Settings for this line
 
             var line = lines[each];
-            console.log(line);
-
             //Ignore whitespaces
             if (!/\S/.test(line)) {
                 console.log("SKIP LINE " + (+each + +1));
@@ -77,7 +75,6 @@ exports.scan = function(){
                     if (editor == "set") {
                         console.log("setup");
                         rules.set[option] = value;
-                        console.log(rules);
                         setup = true;
                     } else {
                         settings[option] = value;
@@ -90,12 +87,24 @@ exports.scan = function(){
             if (settings.special != undefined) {
                 settings = dyn[settings.special](settings, elements[1]);
 
+                if (settings.autoClose == false) {
+                    dynClose.push(settings.id);
+                }
+
                 if (!settings) {
                     return false;
                 }
             }
 
-            htmlConvert(prefix, settings, setup);
+            if (settings.idLink == dynClose[dynClose.length - 1]) {
+                closeTags();
+            } else {
+                htmlConvert(prefix, settings, setup);
+            }
+
+            if (settings.autoClose) {
+                closeTags();
+            }
         }
 
         closeTags(true);
@@ -105,12 +114,11 @@ exports.scan = function(){
 
 var htmlOut = ""
 var openTags = [];
+var dynClose = [];
 function htmlConvert (prefix, format, enclose){
     if (enclose) {
         htmlOut = "<div style='" + cssConvert(rules.set) + prefix + "'>";
-        console.log(htmlOut);
         openTags.push("div");
-        console.log(openTags);
     } else {
         var tag = format.tag;
         if (tag == undefined) tag = "div";
@@ -121,12 +129,15 @@ function htmlConvert (prefix, format, enclose){
 }
 
 function cssConvert (format) {
+    console.log(format);
     var props = Object.keys(format)
 
     var output = "";
     for (each in props) {
         var value = format[props[each]];
         var rule  = cssRef[props[each]];
+        console.log(props[each]);
+        console.log(rule);
 
         var css = rule.css + ":" + value + rule.unit + ";";
 

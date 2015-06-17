@@ -1,2 +1,9 @@
 set txs=15>
 pg>hello
+sl>
+le>Hello
+le>yo
+le>meh
+sl typ=point>
+le>woop
+le>hop
