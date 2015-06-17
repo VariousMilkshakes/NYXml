@@ -51,6 +51,8 @@ Lite markup for styx forum posts
 
 `le` : List element
 
+`el` : End a list
+
 ####Global
 `set` : Sets up global formatting
 
