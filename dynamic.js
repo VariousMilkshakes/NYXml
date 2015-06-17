@@ -1,23 +1,29 @@
 module.exports = {
-    "continous" : function (settings){
-        var output = "";
+    "alt-text" : function (format, content){
+        format[alt] = content;
 
-        var i = currentLine;
-        var line = lines[i];
-        while (line[0] == '>') {
-            output += line;
+        return format;
+    },
+    "start-list" : function (format, content){
+        var type = format.typ;
+        var tag = "";
 
-            i++;
-            line = lines[i];
+        switch (type){
+            case "num":
+                tag = "ol";
+                break;
+            case "point":
+                tag = "ul";
+                break;
+            default:
+                console.log("Unsupported list type: " + type);
+                return false;
         }
 
-        return output;
+        format.tag = tag;
+        return format;
     },
-    "alt-text" : function (){
-    },
-    "start-list" : function (){
-    },
-    "percentageUnit" : function (format){
+    "percentageUnit" : function (format, content){
         format.unit = "%";
 
         return format;

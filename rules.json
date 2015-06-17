@@ -11,8 +11,7 @@
         "content" : "",
         "txs" : 14,
         "col" : "#000",
-        "bgc" : "transparent",
-        "special" : "continous"
+        "bgc" : "transparent"
     },
     "h1" : {
         "tag"   : "h1",
@@ -44,6 +43,7 @@
         "src" : "",
         "hgt" : 50,
         "wdt" : 50,
+        "alt" : "",
         "special" : "alt-text"
     },
     "hr" : {

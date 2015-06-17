@@ -57,8 +57,9 @@ exports.scan = function(){
                 settings.content = elements[1];
             }
 
-            if (settings.special != undefined) {
-                settings = dyn[settings.special](settings);
+            if (line[0] == '>') {
+                var content = line.substring(1);
+                htmlOut += " " + content;
             }
 
             var setup = false;
@@ -84,6 +85,14 @@ exports.scan = function(){
                 }
 
                 i++;
+            }
+
+            if (settings.special != undefined) {
+                settings = dyn[settings.special](settings, elements[1]);
+
+                if (!settings) {
+                    return false;
+                }
             }
 
             htmlConvert(prefix, settings, setup);
