@@ -46,7 +46,7 @@ Lite markup for styx forum posts
 - `wdt` Width of rule : **%**
 - `hgt` Height of rule : **px**
 
-`fl` : First list element
+`sl` : Start a list
 - `typ` Type of list : **num** / **point**
 
 `le` : List element
