@@ -116,7 +116,6 @@ exports.set = function (loc, val){
     var indexie = loc.split(',');
     var rules = NYXrules;
     var log = [];
-    console.log(indexie);
 
     for(each in indexie) {
         rules = rules[indexie[each]];
@@ -124,9 +123,6 @@ exports.set = function (loc, val){
     }
 
     log[log.length-1] = val;
-
-    console.log(log);
-    console.log(indexie);
 
     var i = log.length - 1;
     while (i >= 1) {
@@ -138,6 +134,14 @@ exports.set = function (loc, val){
     }
 
     rules[indexie[0]] = rebuild;
-    console.log(rules);
     return rules;
+}
+
+exports.add = function (newRule, content){
+    if (NYXrules[newRule] != undefined) {
+        return true;
+    } else {
+        NYXrules[newRule] = content;
+        return false;
+    }
 }

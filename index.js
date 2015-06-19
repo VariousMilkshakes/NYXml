@@ -5,6 +5,23 @@ var nyx  = require('./rules.js');
 var cssRef = require('./cssReference.json');
 var dyn = require('./dynamic.js');
 
+//Append to add more rules to NYX base set
+exports.use = function (type, newSet){
+    if (type == "css") {
+    } else {
+        for (each in newSet) {
+            var error = nyx.add(each, newSet[each]);
+            if (error) {
+                return error;
+            } else {
+                console.log(nyx.rules());
+            }
+        }
+    }
+
+    return true;
+}
+
 //Used for converting txt documents written in NYX to HTML
 exports.scan = function (path, enclose){
     var defer = q.defer();
