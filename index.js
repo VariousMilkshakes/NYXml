@@ -1,292 +1,26 @@
 var fs = require('fs');
+var q = require('q');
 
 var nyx  = require('./rules.js');
 var cssRef = require('./cssReference.json');
 var dyn = require('./dynamic.js');
 
-exports.scan = function (inBox){
-    if (inBox == undefined) inBox = false;
-    masterBox = inBox;
+exports.scan = function (enclose){
+    var defer = q.defer();
     fs.readFile("D:/HadeSoft/home_website/prototype/NYXml/tests/testFile2.txt", "utf8", function (err, data){
-        var lines = data.split('\n');
-        var rules = nyx.rules();
-
-        //Check if no rules have been used
-        var plain = false;
-
-        for (each in lines) {
-            var line = lines[each];
-
-            var prefix = checkPrefix(line[0]);
-            if (prefix != false) {
-                line = line.substring(1);
-            } else {
-                prefix = "";
-            }
-
-            //Ignore whitespaces
-            if (!/\S/.test(line)) {
-                continue;
-            }
-
-            //Check if line is plain text
-            if (!/\>/.test(line)) {
-
-
-                if (plain) {
-                    lines[each - 1]
-                }
-            }
-
-            // element>element
-            var elements = line.split('>');
-            var controls = elements[0].split(' ');
-
-            var editor = controls[0];
-
-            var settings = rules[editor];
-
-
-            if (prefix == true) {
-
-                nestElement(settings.tag);
-            } else if (nesting) {
-                nesting = false;
-
-
-                closeTags();
-            }
-
-            if (settings == undefined) {
-
-                return false;
-            }
-
-            if (settings.content != undefined) {
-                settings.content = elements[1];
-            } else {
-                settings.content = "";
-            }
-
-            if (line[0] == '>') {
-                var content = line.substring(1);
-                htmlOut += " " + content;
-            }
-
-            var setup = false;
-            var write = true;
-
-            var i = 1;
-            while (i < controls.length) {
-                var NYXrule = controls[i].split('=');
-                var option = NYXrule[0];
-                var value  = NYXrule[1];
-
-                if (settings.format[option] == undefined) {
-
-                    return false;
-                } else {
-
-                    if (editor == "set") {
-
-                        nyx.set("set,format," + option, value);
-
-                        settings = rules.set;
-
-                        setup = true;
-                        write = inBox;
-                    } else {
-                        settings.format[option] = value;
-                    }
-                }
-
-                i++;
-            }
-
-            if (settings.special != undefined) {
-
-                if (settings.special == "link") {
-
-
-                    if (settings.idLink == dynClose[dynClose.length - 1]) {
-
-                        dynClose = dynClose.splice(dynClose.length - 1, 1);
-                        write = false;
-                    } else {
-                        write = true;
-                    }
-                } else {
-
-                    var dynamic = dyn[settings.special];
-                    settings = dynamic(settings, elements[1]);
-
-                    if (settings.autoClose == false) {
-                        dynClose.push(settings.id);
-                    }
-
-                    if (!settings) {
-                        return false;
-                    }
-                }
-            }
-
-            if (write) {
-
-                htmlConvert(prefix, settings, rules, setup);
-
-            }
-
-            if (settings.autoClose) {
-
-                closeTags();
-            }
+        if (err) {
+            defer.reject(new Error(error));
+        } else {
+            defer = parseNyx(data, enclose, defer);
         }
-
-        closeTags(true);
-        return htmlOut;
     });
+    return defer.promise;
 }
 
-exports.toHtml = function(data, inBox) {
-    if (inBox == undefined) inBox = false;
-    masterBox = inBox;
-    var lines = data.split('\n');
-    var rules = nyx.rules();
-
-    //Check if no rules have been used
-    var plain = false;
-
-    for (each in lines) {
-        var line = lines[each];
-
-        var prefix = checkPrefix(line[0]);
-        if (prefix != false) {
-            line = line.substring(1);
-        } else {
-            prefix = "";
-        }
-
-        //Ignore whitespaces
-        if (!/\S/.test(line)) {
-
-            continue;
-        }
-
-        //Check if line is plain text
-        if (!/\>/.test(line)) {
-
-
-            if (plain) {
-                lines[each - 1]
-            }
-        }
-
-        // element>element
-        var elements = line.split('>');
-        var controls = elements[0].split(' ');
-
-        var editor = controls[0];
-
-        var settings = rules[editor];
-
-
-        if (prefix == true) {
-
-            nestElement(settings.tag);
-        } else if (nesting) {
-            nesting = false;
-
-
-            closeTags();
-        }
-
-        if (settings == undefined) {
-
-            return false;
-        }
-
-        if (settings.content != undefined) {
-            settings.content = elements[1];
-        } else {
-            settings.content = "";
-        }
-
-        if (line[0] == '>') {
-            var content = line.substring(1);
-            htmlOut += " " + content;
-        }
-
-        var setup = false;
-        var write = true;
-
-        var i = 1;
-        while (i < controls.length) {
-            var NYXrule = controls[i].split('=');
-            var option = NYXrule[0];
-            var value  = NYXrule[1];
-
-            if (settings.format[option] == undefined) {
-
-                return false;
-            } else {
-
-                if (editor == "set") {
-
-                    nyx.set("set,format," + option, value);
-
-                    settings = rules.set;
-
-                    setup = true;
-                    write = inBox;
-                } else {
-                    settings.format[option] = value;
-                }
-            }
-
-            i++;
-        }
-
-        if (settings.special != undefined) {
-
-            if (settings.special == "link") {
-
-
-                if (settings.idLink == dynClose[dynClose.length - 1]) {
-
-                    dynClose = dynClose.splice(dynClose.length - 1, 1);
-                    write = false;
-                } else {
-                    write = true;
-                }
-            } else {
-
-                var dynamic = dyn[settings.special];
-                settings = dynamic(settings, elements[1]);
-
-                if (settings.autoClose == false) {
-                    dynClose.push(settings.id);
-                }
-
-                if (!settings) {
-                    return false;
-                }
-            }
-        }
-
-        if (write) {
-
-            htmlConvert(prefix, settings, rules, setup);
-
-        }
-
-        if (settings.autoClose) {
-
-            closeTags();
-        }
-    }
-
-    closeTags(true);
-    return htmlOut;
+exports.toHtml = function(data, enclose) {
+    var defer = q.defer();
+    defer = parseNyx(data, enclose, defer);
+    return defer.promise;
 }
 
 var htmlOut = ""
@@ -405,4 +139,142 @@ function nestElement (currentTag){
     openTags.push(parentTag);
 
 
+}
+
+function parseNyx (data, inBox, defer){
+    if (inBox == undefined) inBox = false;
+    masterBox = inBox;
+    var lines = data.split('\n');
+    var rules = nyx.rules();
+
+    //Check if no rules have been used
+    var plain = false;
+
+    for (each in lines) {
+        var line = lines[each];
+
+        var prefix = checkPrefix(line[0]);
+        if (prefix != false) {
+            line = line.substring(1);
+        } else {
+            prefix = "";
+        }
+
+        //Ignore whitespaces
+        if (!/\S/.test(line)) {
+            continue;
+        }
+
+        //Check if line is plain text
+        if (!/\>/.test(line)) {
+            // if (plain) {
+            //     lines[each - 1];
+            // }
+            continue;
+        }
+
+        // element>element
+        var elements = line.split('>');
+        var controls = elements[0].split(' ');
+
+        var editor = controls[0];
+
+        var settings = rules[editor];
+
+
+        if (prefix == true) {
+            nestElement(settings.tag);
+        } else if (nesting) {
+            nesting = false;
+            closeTags();
+        }
+
+        if (settings == undefined) {
+            defer.reject(new Error("Editor: " + editor + " is not a recognised editor! - Line " + (+each + +1)));
+            return false;
+        }
+
+        if (settings.content != undefined) {
+            settings.content = elements[1];
+        } else {
+            settings.content = "";
+        }
+
+        if (line[0] == '>') {
+            var content = line.substring(1);
+            htmlOut += " " + content;
+        }
+
+        var setup = false;
+        var write = true;
+
+        var i = 1;
+        while (i < controls.length) {
+            var NYXrule = controls[i].split('=');
+            var option = NYXrule[0];
+            var value  = NYXrule[1];
+
+            if (settings.format[option] == undefined) {
+                defer.reject(new Error("Rule: " + option + " is not a member of: " + editor + " - Line " + (+each + +1)))
+            } else {
+
+                if (editor == "set") {
+
+                    nyx.set("set,format," + option, value);
+
+                    settings = rules.set;
+
+                    setup = true;
+                    write = inBox;
+                } else {
+                    settings.format[option] = value;
+                }
+            }
+
+            i++;
+        }
+
+        if (settings.special != undefined) {
+
+            if (settings.special == "link") {
+
+
+                if (settings.idLink == dynClose[dynClose.length - 1]) {
+
+                    dynClose = dynClose.splice(dynClose.length - 1, 1);
+                    write = false;
+                } else {
+                    write = true;
+                }
+            } else {
+
+                var dynamic = dyn[settings.special];
+                settings = dynamic(settings, elements[1]);
+
+                if (settings.autoClose == false) {
+                    dynClose.push(settings.id);
+                }
+
+                if (!settings) {
+                    return false;
+                }
+            }
+        }
+
+        if (write) {
+
+            htmlConvert(prefix, settings, rules, setup);
+
+        }
+
+        if (settings.autoClose) {
+
+            closeTags();
+        }
+    }
+
+    closeTags(true);
+    defer.resolve(htmlOut);
+
+    return defer;
 }
