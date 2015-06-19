@@ -5,9 +5,10 @@ var nyx  = require('./rules.js');
 var cssRef = require('./cssReference.json');
 var dyn = require('./dynamic.js');
 
-exports.scan = function (enclose){
+//Used for converting txt documents written in NYX to HTML
+exports.scan = function (path, enclose){
     var defer = q.defer();
-    fs.readFile("D:/HadeSoft/home_website/prototype/NYXml/tests/testFile2.txt", "utf8", function (err, data){
+    fs.readFile(path, "utf8", function (err, data){
         if (err) {
             defer.reject(new Error(error));
         } else {
@@ -17,22 +18,28 @@ exports.scan = function (enclose){
     return defer.promise;
 }
 
+//Used to convert a NYX string into HTML
 exports.toHtml = function(data, enclose) {
     var defer = q.defer();
     defer = parseNyx(data, enclose, defer);
     return defer.promise;
 }
 
+//Holds the current html being created
 var htmlOut = ""
+//Keeps track of any tags which are still open
 var openTags = [];
+//Keeps track of tags which contain nested elements
 var dynClose = [];
+//Keeps track of the last tag that was added to htmlOut
 var prevTag = "";
+//Is the current tag nested in another tag?
 var nesting = false;
+//Is the html contained within a parent div
 var masterBox = false;
 
 function htmlConvert (prefix, format, global, enclose){
     if (enclose) {
-
         htmlOut = "<div style='" + cssConvert(nyx.rules().set) + prefix + "'>";
         openTags.push("div");
     } else {
