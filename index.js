@@ -4,7 +4,9 @@ var nyx  = require('./rules.js');
 var cssRef = require('./cssReference.json');
 var dyn = require('./dynamic.js');
 
-exports.scan = function(){
+exports.scan = function(inBox){
+    if (inBox == undefined) inBox = false;
+    masterBox = inBox;
     fs.readFile("D:/HadeSoft/home_website/prototype/NYXml/tests/testFile2.txt", "utf8", function (err, data){
         var lines = data.split('\n');
         var rules = nyx.rules();
@@ -63,6 +65,8 @@ exports.scan = function(){
 
             if (settings.content != undefined) {
                 settings.content = elements[1];
+            } else {
+                settings.content = "";
             }
 
             if (line[0] == '>') {
@@ -91,6 +95,7 @@ exports.scan = function(){
                         settings = rules.set;
                         console.log(settings);
                         setup = true;
+                        write = inBox;
                     } else {
                         settings.format[option] = value;
                     }
@@ -128,7 +133,7 @@ exports.scan = function(){
 
             if (write) {
                 console.log("HTML");
-                htmlConvert(prefix, settings, setup);
+                htmlConvert(prefix, settings, rules, setup);
                 console.log(htmlOut);
             }
 
@@ -148,8 +153,9 @@ var openTags = [];
 var dynClose = [];
 var prevTag = "";
 var nesting = false;
+var masterBox = false;
 
-function htmlConvert (prefix, format, enclose){
+function htmlConvert (prefix, format, global, enclose){
     if (enclose) {
         console.log("Enclosing HTML");
         htmlOut = "<div style='" + cssConvert(nyx.rules().set) + prefix + "'>";
@@ -158,21 +164,28 @@ function htmlConvert (prefix, format, enclose){
         var tag = format.tag;
         if (tag == undefined) tag = "div";
 
-        htmlOut += "<" + tag + ">" + format.content;
+        var formatting = cssConvert(format, global);
+        if (formatting == "") {
+            var style = "";
+        } else {
+            style = " style='" + formatting + "'";
+        }
+
+        htmlOut += "<" + tag + style + ">" + format.content;
         openTags.push(tag);
     }
 }
 
-function cssConvert (format) {
-    var props = Object.keys(format.format);
-
+function cssConvert (format, global) {
     var output = "";
     for (each in format.format) {
         var value = format.format[each];
-        console.log(value);
+        console.log(each);
 
-        if (value == "default") {
-            value = rules.set[props[each]];
+        if (value == "default" && !masterBox) {
+            value = global.set.format[each];
+        } else if (value == "default" && masterBox) {
+            continue;
         }
 
         var rule  = cssRef[each];
