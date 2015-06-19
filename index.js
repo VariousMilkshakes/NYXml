@@ -1,20 +1,27 @@
 var fs = require('fs');
 
-var rules  = require('./rules.json');
+var nyx  = require('./rules.js');
 var cssRef = require('./cssReference.json');
 var dyn = require('./dynamic.js');
 
 exports.scan = function(){
     fs.readFile("D:/HadeSoft/home_website/prototype/NYXml/tests/testFile2.txt", "utf8", function (err, data){
         var lines = data.split('\n');
+        var rules = nyx.rules();
 
         //Check if no rules have been used
         var plain = false;
 
         for (each in lines) {
-            //Settings for this line
-
             var line = lines[each];
+
+            var prefix = checkPrefix(line[0]);
+            if (prefix != false) {
+                line = line.substring(1);
+            } else {
+                prefix = "";
+            }
+
             //Ignore whitespaces
             if (!/\S/.test(line)) {
                 console.log("SKIP LINE " + (+each + +1));
@@ -32,19 +39,22 @@ exports.scan = function(){
 
             // element>element
             var elements = line.split('>');
-            var control = elements[0].split(' ');
+            var controls = elements[0].split(' ');
 
-            var editor = control[0];
-            var prefix = checkPrefix(editor);
-
-
-            if (prefix != false) {
-                editor = editor.substring(1);
-            } else {
-                prefix = "";
-            }
+            var editor = controls[0];
 
             var settings = rules[editor];
+            console.log(nesting);
+
+            if (prefix == true) {
+                console.log("nest");
+                nestElement(settings.tag);
+            } else if (nesting) {
+                nesting = false;
+                console.log("End nest: ");
+                console.log(openTags);
+                closeTags();
+            }
 
             if (settings == undefined) {
                 console.log("Editor: " + editor + " is not a recognised editor!");
@@ -61,23 +71,28 @@ exports.scan = function(){
             }
 
             var setup = false;
+            var write = true;
+
             var i = 1;
-            while (i < control.length) {
-                var NYXrule = control[i].split('=');
+            while (i < controls.length) {
+                var NYXrule = controls[i].split('=');
                 var option = NYXrule[0];
                 var value  = NYXrule[1];
 
-                if (settings[option] == undefined) {
-                    console.log("Rule: " + editor + " is not a member of: " + control[0] + " - Line " + (+each + +1));
+                if (settings.format[option] == undefined) {
+                    console.log("Rule: " + option + " is not a member of: " + editor + " - Line " + (+each + +1));
                     return false;
                 } else {
                     console.log("e:" + editor);
                     if (editor == "set") {
-                        console.log("setup");
-                        rules.set[option] = value;
+                        console.log("setup " + option + " as " + value);
+                        nyx.set("set,format," + option, value);
+                        console.log(rules.set);
+                        settings = rules.set;
+                        console.log(settings);
                         setup = true;
                     } else {
-                        settings[option] = value;
+                        settings.format[option] = value;
                     }
                 }
 
@@ -85,24 +100,41 @@ exports.scan = function(){
             }
 
             if (settings.special != undefined) {
-                settings = dyn[settings.special](settings, elements[1]);
+                console.log(settings.special);
+                if (settings.special == "link") {
+                    console.log(dynClose);
+                    console.log(settings.idLink);
+                    if (settings.idLink == dynClose[dynClose.length - 1]) {
+                        console.log("Closing tag");
+                        dynClose = dynClose.splice(dynClose.length - 1, 1);
+                        write = false;
+                    } else {
+                        write = true;
+                    }
+                } else {
+                    console.log("tracl");
+                    var dynamic = dyn[settings.special];
+                    settings = dynamic(settings, elements[1]);
 
-                if (settings.autoClose == false) {
-                    dynClose.push(settings.id);
-                }
+                    if (settings.autoClose == false) {
+                        dynClose.push(settings.id);
+                        openTags.push(settings.tag);
+                    }
 
-                if (!settings) {
-                    return false;
+                    if (!settings) {
+                        return false;
+                    }
                 }
             }
 
-            if (settings.idLink == dynClose[dynClose.length - 1]) {
-                closeTags();
-            } else {
+            if (write) {
+                console.log("HTML");
                 htmlConvert(prefix, settings, setup);
+                console.log(htmlOut);
             }
 
             if (settings.autoClose) {
+                console.log("Tags");
                 closeTags();
             }
         }
@@ -115,29 +147,37 @@ exports.scan = function(){
 var htmlOut = ""
 var openTags = [];
 var dynClose = [];
+var prevTag = "";
+var nesting = false;
+
 function htmlConvert (prefix, format, enclose){
     if (enclose) {
-        htmlOut = "<div style='" + cssConvert(rules.set) + prefix + "'>";
+        console.log("Enclosing HTML");
+        htmlOut = "<div style='" + cssConvert(nyx.rules().set) + prefix + "'>";
         openTags.push("div");
     } else {
         var tag = format.tag;
         if (tag == undefined) tag = "div";
 
         htmlOut += "<" + tag + ">" + format.content;
-        openTags.push("p");
+        openTags.push(tag);
     }
 }
 
 function cssConvert (format) {
-    console.log(format);
-    var props = Object.keys(format)
+    var props = Object.keys(format.format);
 
     var output = "";
-    for (each in props) {
-        var value = format[props[each]];
-        var rule  = cssRef[props[each]];
-        console.log(props[each]);
-        console.log(rule);
+    for (each in format.format) {
+        var value = format.format[each];
+        console.log(value);
+
+        if (value == "default") {
+            value = rules.set[props[each]];
+        }
+
+        var rule  = cssRef[each];
+
 
         var css = rule.css + ":" + value + rule.unit + ";";
 
@@ -149,27 +189,35 @@ function cssConvert (format) {
 
 function closeTags (all){
     var tagCount = openTags.length -1;
+    console.log(openTags);
 
     if (all){
         var i = 0;
 
         while (i <= tagCount) {
+            console.log("?");
             var pos = tagCount - i;
             var tag = openTags[pos];
-            htmlOut += "</" + tag + ">";
+            var close = "</" + tag + ">";
+            htmlOut += close;
+            prevTag = close;
 
             i++;
         }
+
+        openTags = [];
     } else {
         var tag = openTags[tagCount];
+        openTags = openTags.splice(-1, 1);
+        console.log(openTags);
 
-        htmlOut += "</" + tag + ">";
+        var close = "</" + tag + ">";
+        htmlOut += close;
+        prevTag = close;
     }
 }
 
-function checkPrefix (line){
-    var prefix = line[0];
-
+function checkPrefix (prefix){
     switch (prefix) {
         case '_':
             return "text-decoration:underline;";
@@ -182,7 +230,26 @@ function checkPrefix (line){
             break;
         case '/':
             return "font-style:italic;";
+            break;
+        case '>':
+            return true;
+            break;
         default:
             return false;
     }
+}
+
+function nestElement (currentTag){
+    console.log("nest");
+    nesting = true;
+    var outLength = htmlOut.length - 1;
+    var finalTagLength = prevTag.length - 1;
+    htmlOut = htmlOut.substring(0, outLength - finalTagLength);
+
+    var parentTag = prevTag.substring(2, finalTagLength);
+    console.log(parentTag);
+
+    openTags.push(parentTag);
+    console.log("VVVVVV");
+    console.log(openTags);
 }

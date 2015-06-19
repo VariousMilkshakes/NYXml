@@ -16,8 +16,8 @@ module.exports = {
                 tag = "ul";
                 break;
             default:
-                console.log("Unsupported list type: " + type);
-                return false;
+                tag = "ul";
+                break;
         }
 
         format.tag = tag;
