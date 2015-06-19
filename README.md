@@ -13,6 +13,8 @@ Lite markup for styx forum posts
 
 `-` : Strike through
 
+`>` : Nest element
+
 ### Rules and Options
 `pg` : text paragraph
 - `txs` Font size : **px**
@@ -53,7 +55,25 @@ Lite markup for styx forum posts
 
 `el` : End a list
 
-####Global
+#### Global
 `set` : Sets up global formatting
 
 `content` should be left `blank` or replaced with a `rule`
+
+### Usage Example
+##### Set default formatting
+```
+//This will apply the css as default to all elements
+  set txs=20>
+//This will apply the css as default to only h2
+  set col=#f00>h2
+```
+
+##### Nest an element
+```
+sl>
+le>
+le>
+>h1>Yop
+>el
+```
