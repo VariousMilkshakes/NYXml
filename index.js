@@ -118,7 +118,6 @@ exports.scan = function(){
 
                     if (settings.autoClose == false) {
                         dynClose.push(settings.id);
-                        openTags.push(settings.tag);
                     }
 
                     if (!settings) {
@@ -208,7 +207,7 @@ function closeTags (all){
         openTags = [];
     } else {
         var tag = openTags[tagCount];
-        openTags = openTags.splice(-1, 1);
+        openTags.splice(-1, 1);
         console.log(openTags);
 
         var close = "</" + tag + ">";

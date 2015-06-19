@@ -6,7 +6,7 @@ le>yo
 le>meh
 sl typ=point>
 le>woop
->h1>Right
+>h1 txs=20>Right
 le>hop
 el>
 el>

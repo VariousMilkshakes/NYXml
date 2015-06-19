@@ -101,7 +101,7 @@ var NYXrules = {
             0: "ul",
             1: "li"
         },
-        "autoClose" : true,
+        "autoClose" : false,
         "idLink" : "7",
         "special" : "link",
         "format" : {}
