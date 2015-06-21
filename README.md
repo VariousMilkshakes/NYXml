@@ -60,7 +60,7 @@ Lite markup for styx forum posts
 
 `content` should be left `blank` or replaced with a `rule`
 
-### Usage Example
+### Syntax Example
 ##### Set default formatting
 ```
 //This will apply the css as default to all elements
@@ -76,4 +76,41 @@ le>
 le>
 >h1>Yop
 >el
+```
+
+### Usage Example
+#### File Convert
+Convert a text file from NYXml to HTML
+```
+var nyx = require('NYXml');
+var path = //Location of file
+var enclose = //Whether or not you want the returned html to be contained in div (recommended : true);
+
+nyx.scan(path, enclose)
+.then(function (result){
+  //Returns HTML ready to be inserted in to web page
+  console.log(result);
+})
+.fail(function (error){
+  //Returns error in converting file
+  console.log(error);
+});
+```
+
+#### String Convert
+Converts NYXml string in HTML
+```
+var nyx = require('NYXml');
+var data = //String of nyx;
+var enclose = //Whether or not you want the returned html to be contained in div (recommended : true);
+
+nyx.toHtml(data, enclose)
+.then(function (result){
+  //Returns HTML ready to be inserted in to web page
+  console.log(result);
+})
+.fail(function (error){
+  //Returns error in converting file
+  console.log(error);
+});
 ```
